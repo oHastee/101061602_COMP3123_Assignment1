@@ -6,10 +6,11 @@ const bodyParser = require('body-parser');
 const app = express();
 
 // Middleware
+app.use(express.json());
 app.use(bodyParser.json());
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI, {
+mongoose.connect('mongodb+srv://admin:Pass@cluster0.jjxa4.mongodb.net/comp3123_assigment1?retryWrites=true&w=majority\n', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 });
@@ -20,12 +21,15 @@ mongoose.connection.once('open', () => {
 });
 
 // Routes
-app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/v1/user', require('./routes/userRoutes'));
 
-// add routes here
+
+// Employee Routes
+app.use('/api/v1/emp', require('./routes/employeeRoutes'));
+
 
 // Start the server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
