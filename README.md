@@ -257,7 +257,7 @@ If you need to connect to the MongoDB database for testing or review:
 
 ## Author
 
-- **Name**: Antonio Gonzalez Lopez (Oscar)
+- **Name**: Oscar Piedrasanta Diaz
 - **Email**: oscarpiediaz@gmail.com
 
 Feel free to reach out for any further information!
