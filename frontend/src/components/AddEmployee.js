@@ -5,9 +5,13 @@ import api from '../api';
 const AddEmployee = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
+        first_name: '',
+        last_name: '',
         email: '',
+        position: '',
+        salary: '',
+        date_of_joining: '',
+        department: '',
     });
 
     const handleChange = (e) => {
@@ -24,7 +28,7 @@ const AddEmployee = () => {
             alert('Employee added successfully!');
             navigate('/employees');
         } catch (err) {
-            console.error(err);
+            console.error('Error:', err.response || err.message); // Log the error
             alert('Failed to add employee.');
         }
     };
@@ -37,8 +41,8 @@ const AddEmployee = () => {
                     <label>First Name:</label>
                     <input
                         type="text"
-                        name="firstName"
-                        value={formData.firstName}
+                        name="first_name"
+                        value={formData.first_name}
                         onChange={handleChange}
                         required
                     />
@@ -47,8 +51,8 @@ const AddEmployee = () => {
                     <label>Last Name:</label>
                     <input
                         type="text"
-                        name="lastName"
-                        value={formData.lastName}
+                        name="last_name"
+                        value={formData.last_name}
                         onChange={handleChange}
                         required
                     />
@@ -63,8 +67,52 @@ const AddEmployee = () => {
                         required
                     />
                 </div>
+                <div>
+                    <label>Position:</label>
+                    <input
+                        type="text"
+                        name="position"
+                        value={formData.position}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div>
+                    <label>Salary:</label>
+                    <input
+                        type="number"
+                        name="salary"
+                        value={formData.salary}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div>
+                    <label>Date of Joining:</label>
+                    <input
+                        type="date"
+                        name="date_of_joining"
+                        value={formData.date_of_joining}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div>
+                    <label>Department:</label>
+                    <input
+                        type="text"
+                        name="department"
+                        value={formData.department}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
                 <button type="submit">Save</button>
-                <button type="button" onClick={() => navigate('/employees')} style={{ marginLeft: '10px' }}>
+                <button
+                    type="button"
+                    onClick={() => navigate('/employees')}
+                    style={{ marginLeft: '10px' }}
+                >
                     Cancel
                 </button>
             </form>

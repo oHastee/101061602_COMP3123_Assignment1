@@ -5,6 +5,7 @@ import Login from './components/Login';
 import Signup from './components/Signup';
 import ViewEmployee from './components/ViewEmployee';
 import UpdateEmployee from './components/UpdateEmployee';
+import AddEmployee from './components/AddEmployee'; // Import AddEmployee component
 
 function App() {
     return (
@@ -13,6 +14,7 @@ function App() {
                 <Route path="/" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/employees" element={<EmployeeList />} />
+                <Route path="/employees/add" element={<AddEmployee />} /> {/* Add this route */}
                 <Route path="/employees/view/:id" element={<ViewEmployee />} />
                 <Route path="/employees/edit/:id" element={<UpdateEmployee />} />
             </Routes>
