@@ -17,4 +17,12 @@ router.put('/employees/:eid', employeeController.updateEmployee);
 // DELETE /api/v1/emp/employees
 router.delete('/employees', employeeController.deleteEmployee);
 
+// Route to handle employee search
+router.get('/employees/search', employeeController.searchEmployees);
+
+
+
 module.exports = router;
+
+
+

@@ -1,4 +1,6 @@
-const Employee = require('../models/Employee');
+const express = require('express');
+const router = express.Router();
+const Employee = require('../models/Employee'); // Adjust path if necessary
 
 exports.getAllEmployees = async (req, res) => {
     try {
@@ -129,3 +131,26 @@ exports.deleteEmployee = async (req, res) => {
         res.status(500).json({ message: 'Server error.', error: error.message });
     }
 };
+
+exports.searchEmployees = async (req, res) => {
+    try {
+        const { query } = req.query; // Accept search term
+
+        const employees = await Employee.find({
+            $or: [
+                { name: { $regex: query, $options: 'i' } },
+                { role: { $regex: query, $options: 'i' } }
+            ]
+        });
+
+        if (!employees.length) {
+            return res.status(404).json({ message: 'No employees found.' });
+        }
+
+        res.status(200).json(employees);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error.', error: error.message });
+    }
+};
+
+
