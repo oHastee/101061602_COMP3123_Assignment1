@@ -12,10 +12,9 @@ app.use(bodyParser.json());
 const mongoURI = process.env.MONGODB_URI;
 
 mongoose
-    .connect(process.env.MONGODB_URI)
+    .connect(mongoURI) // Use the mongoURI constant here
     .then(() => console.log('Connected to MongoDB'))
     .catch((err) => console.error('MongoDB connection error:', err));
-
 
 // Routes
 app.use('/api/v1/user', require('./routes/userRoutes'));
