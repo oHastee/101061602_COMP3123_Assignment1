@@ -8,12 +8,15 @@ const app = express();
 app.use(express.json());
 app.use(bodyParser.json());
 
-// Connect to MongoDB using the environment variable
-const mongoURI = process.env.MONGODB_URI;
+// Determine MongoDB URI based on environment
+const mongoURI =
+    process.env.NODE_ENV === 'production'
+        ? process.env.MONGODB_URI_REMOTE
+        : process.env.MONGODB_URI_LOCAL;
 
 mongoose
     .connect(mongoURI) // Use the mongoURI constant here
-    .then(() => console.log('Connected to MongoDB'))
+    .then(() => console.log(`Connected to MongoDB (${process.env.NODE_ENV})`))
     .catch((err) => console.error('MongoDB connection error:', err));
 
 // Routes
