@@ -1,11 +1,18 @@
 const express = require('express');
-const { check, validationResult } = require('express-validator');
 const router = express.Router();
 const userController = require('../controllers/userController');
 
 
-// Signup Route
-router.post('/signup', userController.signup);
+// Signup Route with Validation
+router.post(
+    '/signup',
+    [
+        check('username', 'Username is required').not().isEmpty(),
+        check('email', 'Please include a valid email').isEmail(),
+        check('password', 'Password must be 6 or more characters').isLength({ min: 6 }),
+    ],
+    userController.signup
+);
 
 // Login Route
 router.post('/login', [

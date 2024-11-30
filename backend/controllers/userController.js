@@ -2,7 +2,46 @@ const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const { validationResult } = require('express-validator');
 
+
 exports.signup = async (req, res) => {
+    try {
+        const { username, email, password } = req.body;
+
+        // Check if user already exists by username or email
+        const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+        if (existingUser) {
+            return res.status(409).json({ message: 'User already exists.' });
+        }
+
+        // Create a new user
+        const newUser = new User({
+            username,
+            email,
+            password, // Password hashing handled by the schema's pre-save hook
+        });
+
+        // Save the user to the database
+        await newUser.save();
+
+        // Respond with success message and user ID
+        res.status(201).json({
+            message: 'User created successfully.',
+            user_id: newUser._id,
+        });
+    } catch (error) {
+        // Handle server errors
+        console.error(error);
+        res.status(500).json({ message: 'Server error.', error: error.message });
+    }
+};
+
+
+/*exports.signup = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
     try {
         const { username, email, password } = req.body;
 
@@ -27,9 +66,10 @@ exports.signup = async (req, res) => {
             user_id: newUser._id,
         });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ message: 'Server error.', error: error.message });
     }
-};
+};*/
 
 exports.login = async (req, res) => {
     // Validate incoming request

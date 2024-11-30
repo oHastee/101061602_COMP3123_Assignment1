@@ -2,11 +2,30 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const cors = require('cors'); // Make sure CORS is imported
 const app = express();
 
 // Middleware
 app.use(express.json());
 app.use(bodyParser.json());
+
+// CORS Setup
+app.use(
+    cors({
+        origin: 'http://localhost:3001', // Your frontend origin
+        methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
+        allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept'], // Allowed headers
+        credentials: true, // Include cookies if needed
+    })
+);
+
+// Optional additional headers for security and flexibility
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'http://localhost:3001'); // Matches the CORS origin
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+});
 
 // Determine MongoDB URI based on environment
 const mongoURI =

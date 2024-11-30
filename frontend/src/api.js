@@ -9,4 +9,9 @@ const api = axios.create({
     },
 });
 
+console.log('Current NODE_ENV:', process.env.NODE_ENV);
+console.log('Base URL:', process.env.NODE_ENV === 'production'
+    ? process.env.REACT_APP_API_BASE_URL
+    : process.env.REACT_APP_API_LOCAL);
+
 export default api;

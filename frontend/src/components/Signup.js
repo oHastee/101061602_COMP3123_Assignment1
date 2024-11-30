@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api';
+import api from '../api'; // Ensure this is correctly set up to point to your backend
 
 const Signup = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
+        username: '',
         email: '',
         password: '',
     });
@@ -20,12 +19,14 @@ const Signup = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log('Form Data:', formData); // Debugging
         try {
-            await api.post('/user/signup', formData);
+            const response = await api.post('/user/signup', formData);
+            console.log('Response:', response.data); // Debugging
             alert('Signup successful! Please login.');
             navigate('/');
         } catch (err) {
-            console.error(err);
+            console.error('Error:', err.response || err.message); // Debugging
             alert('Signup failed. Please try again.');
         }
     };
@@ -35,21 +36,11 @@ const Signup = () => {
             <h2>Signup</h2>
             <form onSubmit={handleSubmit}>
                 <div>
-                    <label>First Name:</label>
+                    <label>Username:</label>
                     <input
                         type="text"
-                        name="firstName"
-                        value={formData.firstName}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>Last Name:</label>
-                    <input
-                        type="text"
-                        name="lastName"
-                        value={formData.lastName}
+                        name="username"
+                        value={formData.username}
                         onChange={handleChange}
                         required
                     />
@@ -75,7 +66,11 @@ const Signup = () => {
                     />
                 </div>
                 <button type="submit">Signup</button>
-                <button type="button" onClick={() => navigate('/')} style={{ marginLeft: '10px' }}>
+                <button
+                    type="button"
+                    onClick={() => navigate('/')}
+                    style={{ marginLeft: '10px' }}
+                >
                     Cancel
                 </button>
             </form>
