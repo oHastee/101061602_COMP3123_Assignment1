@@ -9,21 +9,64 @@ const EmployeeList = () => {
     useEffect(() => {
         const fetchEmployees = async () => {
             try {
-                const response = await api.get('/emp/employees');
-                setEmployees(response.data);
+                const { data } = await api.get('/emp/employees');
+                console.log('Fetched employees:', data); // Debugging
+                setEmployees(data);
             } catch (err) {
-                console.error('Error fetching employees:', err);
+                console.error('Failed to fetch employees:', err.response || err.message);
             }
         };
 
         fetchEmployees();
     }, []);
 
+    const handleAddEmployee = () => {
+        navigate('/employees/add');
+    };
+
+    const handleViewEmployee = (id) => {
+        if (!id) {
+            console.error('Employee ID is undefined.');
+            alert('Failed to retrieve employee details. Please try again.');
+            return;
+        }
+        navigate(`/employees/view/${id}`);
+    };
+
+    const handleUpdateEmployee = (id) => {
+        if (!id) {
+            console.error('Employee ID is undefined.');
+            alert('Failed to retrieve employee details. Please try again.');
+            return;
+        }
+        navigate(`/employees/edit/${id}`);
+    };
+
+    const handleDeleteEmployee = async (id) => {
+        if (!id) {
+            console.error('Employee ID is undefined.');
+            alert('Failed to delete employee. Please try again.');
+            return;
+        }
+
+        try {
+            await api.delete(`/emp/employees?eid=${id}`); // Use query parameter
+            alert('Employee deleted successfully!');
+            setEmployees(employees.filter((emp) => emp.employee_id !== id));
+        } catch (err) {
+            console.error('Failed to delete employee:', err.response || err.message);
+            alert('Unable to delete employee. Please try again.');
+        }
+    };
+
+    if (employees.length === 0) {
+        return <div>No employees to display.</div>;
+    }
+
     return (
         <div>
             <h2>Employees List</h2>
-            <button onClick={() => navigate('/employees/add')}>Add Employee</button>
-            <button onClick={() => navigate('/logout')}>Logout</button>
+            <button onClick={handleAddEmployee}>Add Employee</button>
             <table>
                 <thead>
                 <tr>
@@ -35,14 +78,16 @@ const EmployeeList = () => {
                 </thead>
                 <tbody>
                 {employees.map((employee) => (
-                    <tr key={employee._id}>
+                    <tr key={employee.employee_id}>
                         <td>{employee.first_name}</td>
                         <td>{employee.last_name}</td>
                         <td>{employee.email}</td>
                         <td>
-                            <button onClick={() => navigate(`/employees/view/${employee._id}`)}>View</button>
-                            <button onClick={() => navigate(`/employees/edit/${employee._id}`)}>Edit</button>
-                            <button onClick={() => navigate(`/employees/delete/${employee._id}`)} style={{ color: 'red' }}>Delete</button>
+                            <button onClick={() => handleViewEmployee(employee.employee_id)}>View</button>
+                            {' | '}
+                            <button onClick={() => handleUpdateEmployee(employee.employee_id)}>Edit</button>
+                            {' | '}
+                            <button onClick={() => handleDeleteEmployee(employee.employee_id)}>Delete</button>
                         </td>
                     </tr>
                 ))}

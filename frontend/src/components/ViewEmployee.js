@@ -1,40 +1,48 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import api from '../api';
 
 const ViewEmployee = () => {
-    const { id } = useParams();
+    const { id } = useParams(); // Extract the :id from the URL
     const navigate = useNavigate();
     const [employee, setEmployee] = useState(null);
 
     useEffect(() => {
         const fetchEmployee = async () => {
             try {
-                const response = await api.get(`/emp/employees/${id}`);
+                const response = await api.get(`/emp/employees/${id}`); // Use employee_id
                 setEmployee(response.data);
-            } catch (err) {
-                console.error(err);
+            } catch (error) {
+                console.error('Failed to fetch employee details:', error.response || error.message);
                 alert('Failed to fetch employee details.');
+                navigate('/employees');
             }
         };
-        fetchEmployee();
-    }, [id]);
 
-    if (!employee) return <p>Loading...</p>;
+        if (id) {
+            fetchEmployee(); // Fetch data if ID exists
+        } else {
+            console.error('Employee ID is missing.');
+            alert('Invalid employee ID.');
+            navigate('/employees');
+        }
+    }, [id, navigate]);
+
+    if (!employee) {
+        return <div>Loading...</div>; // Loading state while fetching data
+    }
 
     return (
         <div>
-            <h2>View Employee Details</h2>
-            <p>
-                <strong>First Name:</strong> {employee.firstName}
-            </p>
-            <p>
-                <strong>Last Name:</strong> {employee.lastName}
-            </p>
-            <p>
-                <strong>Email:</strong> {employee.email}
-            </p>
-            <button onClick={() => navigate('/employees')}>Back to Employee List</button>
+            <h2>Employee Details</h2>
+            <p><strong>First Name:</strong> {employee.first_name}</p>
+            <p><strong>Last Name:</strong> {employee.last_name}</p>
+            <p><strong>Email:</strong> {employee.email}</p>
+            <p><strong>Position:</strong> {employee.position}</p>
+            <p><strong>Salary:</strong> {employee.salary}</p>
+            <p><strong>Date of Joining:</strong> {new Date(employee.date_of_joining).toLocaleDateString()}</p>
+            <p><strong>Department:</strong> {employee.department}</p>
+            <button onClick={() => navigate('/employees')}>Go Back</button>
         </div>
     );
 };
