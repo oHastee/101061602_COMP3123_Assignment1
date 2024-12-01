@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const employeeController = require('../controllers/employeeController');
 
+// Route to handle employee search
+router.get('/employees/search', employeeController.searchEmployees);
+
 // GET /api/v1/emp/employees
 router.get('/employees', employeeController.getAllEmployees);
 
@@ -16,9 +19,6 @@ router.put('/employees/:eid', employeeController.updateEmployee);
 
 // DELETE /api/v1/emp/employees
 router.delete('/employees', employeeController.deleteEmployee);
-
-// Route to handle employee search
-router.get('/employees/search', employeeController.searchEmployees);
 
 
 

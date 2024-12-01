@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Employee = require('../models/Employee'); // Adjust path if necessary
+const mongoose = require('mongoose');
 
 exports.getAllEmployees = async (req, res) => {
     try {
@@ -65,9 +66,15 @@ exports.createEmployee = async (req, res) => {
     }
 };
 
+
 exports.getEmployeeById = async (req, res) => {
     try {
-        const eid = req.params.eid;
+        const { eid } = req.params;
+
+        // Validate that eid is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(eid)) {
+            return res.status(400).json({ message: 'Invalid employee ID format.' });
+        }
 
         const employee = await Employee.findById(eid);
 
@@ -75,7 +82,6 @@ exports.getEmployeeById = async (req, res) => {
             return res.status(404).json({ message: 'Employee not found.' });
         }
 
-        // Format response to match sample output
         const employeeData = {
             employee_id: employee._id,
             first_name: employee.first_name,
@@ -92,6 +98,7 @@ exports.getEmployeeById = async (req, res) => {
         res.status(500).json({ message: 'Server error.', error: error.message });
     }
 };
+
 
 exports.updateEmployee = async (req, res) => {
     try {
@@ -134,14 +141,14 @@ exports.deleteEmployee = async (req, res) => {
 
 exports.searchEmployees = async (req, res) => {
     try {
-        const { query } = req.query; // Accept search term
+        const { department, position } = req.query;
 
-        const employees = await Employee.find({
-            $or: [
-                { name: { $regex: query, $options: 'i' } },
-                { role: { $regex: query, $options: 'i' } }
-            ]
-        });
+        // Build a filter object based on query parameters
+        const filter = {};
+        if (department) filter.department = { $regex: department, $options: 'i' };
+        if (position) filter.position = { $regex: position, $options: 'i' };
+
+        const employees = await Employee.find(filter);
 
         if (!employees.length) {
             return res.status(404).json({ message: 'No employees found.' });
@@ -149,8 +156,12 @@ exports.searchEmployees = async (req, res) => {
 
         res.status(200).json(employees);
     } catch (error) {
+        console.error('Error searching employees:', error);
         res.status(500).json({ message: 'Server error.', error: error.message });
     }
 };
+
+
+
 
 
