@@ -29,6 +29,7 @@ const Signup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            // eslint-disable-next-line no-unused-vars
             const response = await api.post('/user/signup', formData);
             alert('Signup successful! Please login.');
             navigate('/');
