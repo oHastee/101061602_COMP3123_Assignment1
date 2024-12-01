@@ -10,26 +10,28 @@ const app = express();
 app.use(express.json());
 app.use(bodyParser.json());
 
-// CORS Setup
 app.use(
     cors({
-        origin: process.env.FRONTEND_ORIGIN || 'http://localhost:3001', // Use environment variable for frontend origin
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed HTTP methods
+        origin: [
+            process.env.FRONTEND_ORIGIN, // Your frontend URL from .env
+            'http://localhost:3001', // For local testing
+        ],
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
-        credentials: true, // Include cookies if needed
+        credentials: true,
     })
 );
 
 // Handle preflight requests
 app.options('*', cors());
 
-// Optional additional headers for security and flexibility
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', process.env.FRONTEND_ORIGIN || 'http://localhost:3001'); // Matches the CORS origin
+    res.header('Access-Control-Allow-Origin', process.env.FRONTEND_ORIGIN);
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     next();
 });
+
 
 // MongoDB Connection
 const mongoURI = process.env.MONGODB_URI_REMOTE || process.env.MONGODB_URI_LOCAL;
