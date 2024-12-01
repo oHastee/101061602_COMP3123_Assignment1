@@ -112,10 +112,22 @@ const EmployeeList = () => {
         setEmployees(originalEmployees); // Reset to full list
     };
 
+    const handleLogout = () => {
+        // Clear session data
+        localStorage.clear();
+        sessionStorage.clear();
+
+        // Redirect to login page
+        navigate('/');
+    };
+
     return (
         <div>
             <h2>Employees List</h2>
             <button onClick={handleAddEmployee}>Add Employee</button>
+            <button onClick={handleLogout} style={{ marginLeft: '10px', backgroundColor: 'red', color: 'white' }}>
+                Logout
+            </button>
 
             {/* Search Bar */}
             <div style={{ marginTop: '20px', marginBottom: '20px' }}>
