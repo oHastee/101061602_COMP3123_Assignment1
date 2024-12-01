@@ -1,6 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
+import {
+    AppBar,
+    Toolbar,
+    Typography,
+    Button,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    TextField,
+    Box,
+} from '@mui/material';
 
 const EmployeeList = () => {
     const [employees, setEmployees] = useState([]);
@@ -26,7 +41,6 @@ const EmployeeList = () => {
     const handleSearch = async () => {
         const { name, position, department } = searchCriteria;
 
-        // Check if all fields are empty
         if (!name.trim() && !position.trim() && !department.trim()) {
             alert('Please enter at least one search criterion.');
             return;
@@ -40,22 +54,21 @@ const EmployeeList = () => {
 
             const { data } = await api.get(`/emp/employees/search?${searchParams.toString()}`);
 
-            // Check for exact matches
             if (name.trim() && !data.some((emp) => emp.first_name === name || emp.last_name === name)) {
                 alert('No employees matched your search criteria.');
-                setEmployees(originalEmployees); // Reset to full list
+                setEmployees(originalEmployees);
                 return;
             }
 
             if (position.trim() && !data.some((emp) => emp.position.toLowerCase() === position.toLowerCase())) {
                 alert('Position does not exist.');
-                setEmployees(originalEmployees); // Reset to full list
+                setEmployees(originalEmployees);
                 return;
             }
 
             if (department.trim() && !data.some((emp) => emp.department.toLowerCase() === department.toLowerCase())) {
                 alert('Department does not exist.');
-                setEmployees(originalEmployees); // Reset to full list
+                setEmployees(originalEmployees);
                 return;
             }
 
@@ -109,106 +122,152 @@ const EmployeeList = () => {
 
     const handleResetSearch = () => {
         setSearchCriteria({ name: '', position: '', department: '' });
-        setEmployees(originalEmployees); // Reset to full list
+        setEmployees(originalEmployees);
     };
 
     const handleLogout = () => {
-        // Clear session data
         localStorage.clear();
         sessionStorage.clear();
-
-        // Redirect to login page
         navigate('/');
     };
 
     return (
-        <div>
-            <h2>Employees List</h2>
-            <button onClick={handleAddEmployee}>Add Employee</button>
-            <button onClick={handleLogout} style={{ marginLeft: '10px', backgroundColor: 'red', color: 'white' }}>
-                Logout
-            </button>
+        <Box sx={{ flexGrow: 1 }}>
+            {/* AppBar */}
+            <AppBar position="static">
+                <Toolbar>
+                    <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                        Employee Management
+                    </Typography>
+                    <Button color="inherit" onClick={handleLogout}>
+                        Logout
+                    </Button>
+                </Toolbar>
+            </AppBar>
 
-            {/* Search Bar */}
-            <div style={{ marginTop: '20px', marginBottom: '20px' }}>
-                <label>
-                    Name:
-                    <input
-                        type="text"
+            {/* Search Section */}
+            <Box sx={{ padding: 3 }}>
+                <Typography variant="h5" gutterBottom>
+                    Employees List
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 2, marginBottom: 3 }}>
+                    <TextField
+                        label="Name"
+                        variant="outlined"
                         name="name"
                         value={searchCriteria.name}
                         onChange={handleInputChange}
-                        placeholder="Enter name"
-                        style={{ marginLeft: '10px', marginRight: '20px' }}
+                        InputProps={{
+                            sx: { borderRadius: '8px' },
+                        }}
                     />
-                </label>
-                <label>
-                    Position:
-                    <input
-                        type="text"
+                    <TextField
+                        label="Position"
+                        variant="outlined"
                         name="position"
                         value={searchCriteria.position}
                         onChange={handleInputChange}
-                        placeholder="Enter position"
-                        style={{ marginLeft: '10px', marginRight: '20px' }}
+                        InputProps={{
+                            sx: { borderRadius: '8px' },
+                        }}
                     />
-                </label>
-                <label>
-                    Department:
-                    <input
-                        type="text"
+                    <TextField
+                        label="Department"
+                        variant="outlined"
                         name="department"
                         value={searchCriteria.department}
                         onChange={handleInputChange}
-                        placeholder="Enter department"
-                        style={{ marginLeft: '10px', marginRight: '20px' }}
+                        InputProps={{
+                            sx: { borderRadius: '8px' },
+                        }}
                     />
-                </label>
-                <button onClick={handleSearch}>Search</button>
-                <button onClick={handleResetSearch} style={{ marginLeft: '10px' }}>
-                    Back to Full List
-                </button>
-            </div>
+                    <Button
+                        variant="contained"
+                        onClick={handleSearch}
+                        sx={{ borderRadius: '8px' }}
+                    >
+                        Search
+                    </Button>
+                    <Button
+                        variant="outlined"
+                        onClick={handleResetSearch}
+                        sx={{ borderRadius: '8px' }}
+                    >
+                        Back to Full List
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleAddEmployee}
+                        sx={{ borderRadius: '8px' }}
+                    >
+                        Add Employee
+                    </Button>
+                </Box>
 
-            <table>
-                <thead>
-                <tr>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Email</th>
-                    <th>Position</th>
-                    <th>Department</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                {employees.length === 0 ? (
-                    <tr>
-                        <td colSpan="6" style={{ textAlign: 'center' }}>
-                            No employees to display.
-                        </td>
-                    </tr>
-                ) : (
-                    employees.map((employee) => (
-                        <tr key={employee.employee_id}>
-                            <td>{employee.first_name}</td>
-                            <td>{employee.last_name}</td>
-                            <td>{employee.email}</td>
-                            <td>{employee.position}</td>
-                            <td>{employee.department}</td>
-                            <td>
-                                <button onClick={() => handleViewEmployee(employee.employee_id)}>View</button>
-                                {' | '}
-                                <button onClick={() => handleUpdateEmployee(employee.employee_id)}>Edit</button>
-                                {' | '}
-                                <button onClick={() => handleDeleteEmployee(employee.employee_id)}>Delete</button>
-                            </td>
-                        </tr>
-                    ))
-                )}
-                </tbody>
-            </table>
-        </div>
+                {/* Employee Table */}
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>First Name</TableCell>
+                                <TableCell>Last Name</TableCell>
+                                <TableCell>Email</TableCell>
+                                <TableCell>Position</TableCell>
+                                <TableCell>Department</TableCell>
+                                <TableCell>Actions</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {employees.length === 0 ? (
+                                <TableRow>
+                                    <TableCell colSpan={6} align="center">
+                                        No employees to display.
+                                    </TableCell>
+                                </TableRow>
+                            ) : (
+                                employees.map((employee) => (
+                                    <TableRow key={employee.employee_id}>
+                                        <TableCell>{employee.first_name}</TableCell>
+                                        <TableCell>{employee.last_name}</TableCell>
+                                        <TableCell>{employee.email}</TableCell>
+                                        <TableCell>{employee.position}</TableCell>
+                                        <TableCell>{employee.department}</TableCell>
+                                        <TableCell>
+                                            <Button
+                                                size="small"
+                                                variant="outlined"
+                                                onClick={() => handleViewEmployee(employee.employee_id)}
+                                                sx={{ borderRadius: '6px' }}
+                                            >
+                                                View
+                                            </Button>
+                                            <Button
+                                                size="small"
+                                                variant="outlined"
+                                                onClick={() => handleUpdateEmployee(employee.employee_id)}
+                                                sx={{ marginLeft: 1, borderRadius: '6px' }}
+                                            >
+                                                Edit
+                                            </Button>
+                                            <Button
+                                                size="small"
+                                                variant="outlined"
+                                                color="error"
+                                                onClick={() => handleDeleteEmployee(employee.employee_id)}
+                                                sx={{ marginLeft: 1, borderRadius: '6px' }}
+                                            >
+                                                Delete
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </Box>
+        </Box>
     );
 };
 
