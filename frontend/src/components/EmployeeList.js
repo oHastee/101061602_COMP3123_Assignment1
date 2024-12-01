@@ -4,7 +4,8 @@ import api from '../api';
 
 const EmployeeList = () => {
     const [employees, setEmployees] = useState([]);
-    const [searchCriteria, setSearchCriteria] = useState({ department: '', position: '' });
+    const [originalEmployees, setOriginalEmployees] = useState([]); // Store the original list
+    const [searchCriteria, setSearchCriteria] = useState({ name: '', position: '', department: '' });
     const navigate = useNavigate();
 
     // Fetch all employees on initial load
@@ -16,20 +17,48 @@ const EmployeeList = () => {
         try {
             const { data } = await api.get('/emp/employees');
             setEmployees(data);
+            setOriginalEmployees(data); // Save the full list
         } catch (err) {
             console.error('Failed to fetch employees:', err.response || err.message);
         }
     };
 
     const handleSearch = async () => {
-        try {
-            const { department, position } = searchCriteria;
-            const searchParams = new URLSearchParams();
+        const { name, position, department } = searchCriteria;
 
-            if (department) searchParams.append('department', department);
-            if (position) searchParams.append('position', position);
+        // Check if all fields are empty
+        if (!name.trim() && !position.trim() && !department.trim()) {
+            alert('Please enter at least one search criterion.');
+            return;
+        }
+
+        try {
+            const searchParams = new URLSearchParams();
+            if (name.trim()) searchParams.append('name', name.trim());
+            if (position.trim()) searchParams.append('position', position.trim());
+            if (department.trim()) searchParams.append('department', department.trim());
 
             const { data } = await api.get(`/emp/employees/search?${searchParams.toString()}`);
+
+            // Check for exact matches
+            if (name.trim() && !data.some((emp) => emp.first_name === name || emp.last_name === name)) {
+                alert('No employees matched your search criteria.');
+                setEmployees(originalEmployees); // Reset to full list
+                return;
+            }
+
+            if (position.trim() && !data.some((emp) => emp.position.toLowerCase() === position.toLowerCase())) {
+                alert('Position does not exist.');
+                setEmployees(originalEmployees); // Reset to full list
+                return;
+            }
+
+            if (department.trim() && !data.some((emp) => emp.department.toLowerCase() === department.toLowerCase())) {
+                alert('Department does not exist.');
+                setEmployees(originalEmployees); // Reset to full list
+                return;
+            }
+
             setEmployees(data);
         } catch (err) {
             console.error('Failed to search employees:', err.response || err.message);
@@ -78,6 +107,11 @@ const EmployeeList = () => {
         setSearchCriteria((prev) => ({ ...prev, [name]: value }));
     };
 
+    const handleResetSearch = () => {
+        setSearchCriteria({ name: '', position: '', department: '' });
+        setEmployees(originalEmployees); // Reset to full list
+    };
+
     return (
         <div>
             <h2>Employees List</h2>
@@ -86,13 +120,13 @@ const EmployeeList = () => {
             {/* Search Bar */}
             <div style={{ marginTop: '20px', marginBottom: '20px' }}>
                 <label>
-                    Department:
+                    Name:
                     <input
                         type="text"
-                        name="department"
-                        value={searchCriteria.department}
+                        name="name"
+                        value={searchCriteria.name}
                         onChange={handleInputChange}
-                        placeholder="Enter department"
+                        placeholder="Enter name"
                         style={{ marginLeft: '10px', marginRight: '20px' }}
                     />
                 </label>
@@ -107,7 +141,21 @@ const EmployeeList = () => {
                         style={{ marginLeft: '10px', marginRight: '20px' }}
                     />
                 </label>
+                <label>
+                    Department:
+                    <input
+                        type="text"
+                        name="department"
+                        value={searchCriteria.department}
+                        onChange={handleInputChange}
+                        placeholder="Enter department"
+                        style={{ marginLeft: '10px', marginRight: '20px' }}
+                    />
+                </label>
                 <button onClick={handleSearch}>Search</button>
+                <button onClick={handleResetSearch} style={{ marginLeft: '10px' }}>
+                    Back to Full List
+                </button>
             </div>
 
             <table>

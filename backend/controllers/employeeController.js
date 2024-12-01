@@ -141,27 +141,29 @@ exports.deleteEmployee = async (req, res) => {
 
 exports.searchEmployees = async (req, res) => {
     try {
-        const { department, position } = req.query;
+        const { name, department, position } = req.query;
 
-        // Build a filter object based on query parameters
+        // Build a filter object
         const filter = {};
-        if (department) filter.department = { $regex: department, $options: 'i' };
-        if (position) filter.position = { $regex: position, $options: 'i' };
+        if (name) {
+            filter.$or = [
+                { first_name: name },
+                { last_name: name },
+            ];
+        }
+        if (department) {
+            filter.department = department;
+        }
+        if (position) {
+            filter.position = position;
+        }
 
         const employees = await Employee.find(filter);
 
-        if (!employees.length) {
-            return res.status(404).json({ message: 'No employees found.' });
-        }
-
+        // Return all employees if no results match
         res.status(200).json(employees);
-    } catch (error) {
-        console.error('Error searching employees:', error);
-        res.status(500).json({ message: 'Server error.', error: error.message });
+    } catch (err) {
+        console.error('Error searching employees:', err);
+        res.status(500).json({ message: 'Server error.', error: err.message });
     }
 };
-
-
-
-
-
