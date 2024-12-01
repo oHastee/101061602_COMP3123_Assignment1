@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
+import {
+    Box,
+    Button,
+    TextField,
+    Typography,
+    Paper,
+    Grid,
+} from '@mui/material';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -8,6 +16,7 @@ const Login = () => {
         email: '',
         password: '',
     });
+    const [error, setError] = useState('');
 
     const handleChange = (e) => {
         setFormData({
@@ -25,40 +34,59 @@ const Login = () => {
             navigate('/employees');
         } catch (err) {
             console.error(err);
-            alert('Login failed. Please check your credentials.');
+            setError('Login failed. Please check your credentials.');
         }
     };
 
     return (
-        <div>
-            <h2>Login</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Email:</label>
-                    <input
-                        type="email"
+        <Grid container justifyContent="center" alignItems="center" sx={{ height: '100vh' }}>
+            <Paper elevation={3} sx={{ padding: 4, maxWidth: 400, width: '100%' }}>
+                <Box component="form" onSubmit={handleSubmit} noValidate>
+                    <Typography variant="h4" component="h1" gutterBottom textAlign="center">
+                        Login
+                    </Typography>
+                    <TextField
+                        label="Email"
                         name="email"
+                        type="email"
                         value={formData.email}
                         onChange={handleChange}
+                        variant="outlined"
+                        fullWidth
                         required
+                        sx={{ marginBottom: 2 }}
                     />
-                </div>
-                <div>
-                    <label>Password:</label>
-                    <input
-                        type="password"
+                    <TextField
+                        label="Password"
                         name="password"
+                        type="password"
                         value={formData.password}
                         onChange={handleChange}
+                        variant="outlined"
+                        fullWidth
                         required
+                        sx={{ marginBottom: 2 }}
                     />
-                </div>
-                <button type="submit">Login</button>
-                <button type="button" onClick={() => navigate('/signup')} style={{ marginLeft: '10px' }}>
-                    Signup
-                </button>
-            </form>
-        </div>
+                    {error && (
+                        <Typography color="error" sx={{ marginBottom: 2 }}>
+                            {error}
+                        </Typography>
+                    )}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Button type="submit" variant="contained" color="primary" sx={{ borderRadius: '4px' }}>
+                            Login
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            onClick={() => navigate('/signup')}
+                            sx={{ borderRadius: '4px' }}
+                        >
+                            Signup
+                        </Button>
+                    </Box>
+                </Box>
+            </Paper>
+        </Grid>
     );
 };
 

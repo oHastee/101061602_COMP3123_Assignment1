@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api'; // Ensure this is correctly set up to point to your backend
+import api from '../api';
+import {
+    Box,
+    Button,
+    TextField,
+    Typography,
+    Paper,
+    Grid,
+} from '@mui/material';
 
 const Signup = () => {
     const navigate = useNavigate();
@@ -9,6 +17,7 @@ const Signup = () => {
         email: '',
         password: '',
     });
+    const [error, setError] = useState('');
 
     const handleChange = (e) => {
         setFormData({
@@ -19,62 +28,76 @@ const Signup = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Form Data:', formData); // Debugging
         try {
             const response = await api.post('/user/signup', formData);
-            console.log('Response:', response.data); // Debugging
             alert('Signup successful! Please login.');
             navigate('/');
         } catch (err) {
-            console.error('Error:', err.response || err.message); // Debugging
-            alert('Signup failed. Please try again.');
+            console.error('Error:', err.response || err.message);
+            setError('Signup failed. Please try again.');
         }
     };
 
     return (
-        <div>
-            <h2>Signup</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Username:</label>
-                    <input
-                        type="text"
+        <Grid container justifyContent="center" alignItems="center" sx={{ height: '100vh' }}>
+            <Paper elevation={3} sx={{ padding: 4, maxWidth: 400, width: '100%' }}>
+                <Box component="form" onSubmit={handleSubmit} noValidate>
+                    <Typography variant="h4" component="h1" gutterBottom textAlign="center">
+                        Signup
+                    </Typography>
+                    <TextField
+                        label="Username"
                         name="username"
+                        type="text"
                         value={formData.username}
                         onChange={handleChange}
+                        variant="outlined"
+                        fullWidth
                         required
+                        sx={{ marginBottom: 2 }}
                     />
-                </div>
-                <div>
-                    <label>Email:</label>
-                    <input
-                        type="email"
+                    <TextField
+                        label="Email"
                         name="email"
+                        type="email"
                         value={formData.email}
                         onChange={handleChange}
+                        variant="outlined"
+                        fullWidth
                         required
+                        sx={{ marginBottom: 2 }}
                     />
-                </div>
-                <div>
-                    <label>Password:</label>
-                    <input
-                        type="password"
+                    <TextField
+                        label="Password"
                         name="password"
+                        type="password"
                         value={formData.password}
                         onChange={handleChange}
+                        variant="outlined"
+                        fullWidth
                         required
+                        sx={{ marginBottom: 2 }}
                     />
-                </div>
-                <button type="submit">Signup</button>
-                <button
-                    type="button"
-                    onClick={() => navigate('/')}
-                    style={{ marginLeft: '10px' }}
-                >
-                    Cancel
-                </button>
-            </form>
-        </div>
+                    {error && (
+                        <Typography color="error" sx={{ marginBottom: 2 }}>
+                            {error}
+                        </Typography>
+                    )}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Button type="submit" variant="contained" color="primary" sx={{ borderRadius: '4px' }}>
+                            Signup
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            onClick={() => navigate('/')}
+                            sx={{ borderRadius: '4px' }}
+                        >
+                            Cancel
+                        </Button>
+                    </Box>
+                </Box>
+            </Paper>
+        </Grid>
     );
 };
 
